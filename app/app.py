@@ -15,5 +15,20 @@ app.config['MYSQL_DATABASE_PORT'] = 3306
 app.config['MYSQL_DATABASE_DB'] = 'mlbPlayers'
 mysql.init_app(app)
 
+@app.route('/', methods=['GET'])
+def index():
+    user = {'username': 'Name Project'}
+    cursor = mysql.get_db().cursor()
+    cursor.execute('SELECT * FROM mlb_players')
+    result = cursor.fetchall()
+    return render_template('index.html', title='Home', user=user, Names=result)
+
+@app.route('/view/<string:Name>', methods=['GET'])
+def record_view(Name):
+    cursor = mysql.get_db().cursor()
+    cursor.execute('SELECT * FROM mlb_players WHERE Name =%s', Name)
+    result = cursor.fetchall()
+    return render_template('view.html', title='View Form', Player=result[0])
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
