@@ -30,5 +30,24 @@ def record_view(Name):
     result = cursor.fetchall()
     return render_template('view.html', title='View Form', Player=result[0])
 
+@app.route('/edit/<string:Name>', methods=['GET'])
+def form_edit_get(Name):
+    cursor = mysql.get_db().cursor()
+    cursor.execute('SELECT * FROM mlb_players WHERE Name=%s', Name)
+    result = cursor.fetchall()
+    return render_template('edit.html', title='Edit Form', Player=result[0])
+
+@app.route('/edit/<string:Name>', methods=['POST'])
+def form_update_post(Name):
+    cursor = mysql.get_db().cursor()
+    inputData = (str(request.form.get('Name')), str(request.form.get('Team')), str(request.form.get('Position')),
+                 str(request.form.get('Height_inches')), str(request.form.get('Weight_lbs')),
+                 str(request.form.get('Age')), Name)
+    sql_update_query = """UPDATE mlb_players t SET t.Name = %s, t.Team = %s, t.Position = %s, t.Height_inches = 
+    %s, t.Weight_lbs = %s, t.Age = %s WHERE t.Name = %s"""
+    cursor.execute(sql_update_query, inputData)
+    mysql.get_db().commit()
+    return redirect("/", code=302)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
