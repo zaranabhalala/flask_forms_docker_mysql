@@ -101,7 +101,7 @@ def api_retrieve(Name) -> str:
     return resp
 
 @app.route('/api/v1/Names/<string:Name>', methods=['PUT'])
-def api_edit(name) -> str:
+def api_edit(Name) -> str:
     cursor = mysql.get_db().cursor()
     content = request.json
     inputData = (content['Name'], content['Team'], content['Position'],
@@ -129,7 +129,7 @@ def api_add() -> str:
     return resp
 
 @app.route('/api/v1/Names/<string:Name>', methods=['DELETE'])
-def api_delete(name) -> str:
+def api_delete(Name) -> str:
     cursor = mysql.get_db().cursor()
     sql_delete_query = """DELETE FROM mlb_players WHERE Name = %s """
     cursor.execute(sql_delete_query, Name)
