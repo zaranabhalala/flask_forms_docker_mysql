@@ -100,22 +100,41 @@ def api_retrieve(Name) -> str:
     resp = Response(json_result, status=200, mimetype='application/json')
     return resp
 
+@app.route('/api/v1/Names/<string:Name>', methods=['PUT'])
+def api_edit(Name) -> str:
+    cursor = mysql.get_db().cursor()
+    content = request.json
+    inputData = (content['Name'], content['Team'], content['Position'],
+                 content['Height_inches'], content['Weight_lbs'],
+                 content['Age'], Name)
+    sql_update_query = """UPDATE mlb_players t SET t.Name = %s, t.Team = %s, t.Position = %s, t.Height_inches = 
+            %s, t.Weight_lbs = %s, t.Age = %s WHERE t.Name = %s """
+    cursor.execute(sql_update_query, inputData)
+    mysql.get_db().commit()
+    resp = Response(status=200, mimetype='application/json')
+    return resp
 
 @app.route('/api/v1/Names/', methods=['POST'])
 def api_add() -> str:
+    cursor = mysql.get_db().cursor()
+    content = request.json
+    inputData = (content['Name'], content['Team'], content['Position'],
+                 content['Height_inches'], content['Weight_lbs'],
+                 content['Age'])
+    sql_insert_query = """INSERT INTO mlb_players (Name,Team,Position,Height_inches,Weight_lbs,Age) 
+        VALUES (%s, %s,%s, %s,%s, %s) """
+    cursor.execute(sql_insert_query, inputData)
+    mysql.get_db().commit()
     resp = Response(status=201, mimetype='application/json')
     return resp
 
-
-@app.route('/api/v1/Names/<string:Name>', methods=['PUT'])
-def api_edit(name) -> str:
-    resp = Response(status=201, mimetype='application/json')
-    return resp
-
-
-@app.route('/api/Names/<string:Name>', methods=['DELETE'])
-def api_delete(name) -> str:
-    resp = Response(status=210, mimetype='application/json')
+@app.route('/api/v1/Names/<string:Name>', methods=['DELETE'])
+def api_delete(Name) -> str:
+    cursor = mysql.get_db().cursor()
+    sql_delete_query = """DELETE FROM mlb_players WHERE Name = %s """
+    cursor.execute(sql_delete_query, Name)
+    mysql.get_db().commit()
+    resp = Response(status=200, mimetype='application/json')
     return resp
 
 
